@@ -76,7 +76,7 @@ int get(int sock, void *buff, int count)
 
         pnt += once;
         cnt -= once;
-        buff += once;
+        buff = (char*) buff + once;
     }
 
     return pnt;
@@ -98,7 +98,7 @@ ssize_t put(int sock, void *buff, size_t count)
 
         pnt += once;
         cnt -= once;
-        buff += once;
+        buff = (char*) buff + once;
     }
 
     if(pnt != count) log_error("Failed to send data to an image.");
@@ -317,7 +317,8 @@ status start_server(struct image *img, struct options *options)
     struct sockaddr_in server_addr = {
         .sin_family = AF_INET,
         .sin_addr.s_addr = htonl(INADDR_ANY),
-        .sin_port = htons(options->port)
+        .sin_port = htons(options->port),
+        .sin_zero = { 0 }
     };
 
     if(bind(sock, (struct sockaddr*) &server_addr, sizeof server_addr) == -1) {
